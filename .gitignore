@@ -15,3 +15,6 @@ db.md
 .vscode
 *.vscode
 *.vscode/
+./db-data/
+db-data/
+*./db-data/
