@@ -21,5 +21,5 @@ class Category(Base):
     children: Mapped[list["Category"]] = relationship(
         "Category", back_populates="parent"
     )
-    products: Mapped[list["Products"]] = relationship(back_populates="category")
+    products: Mapped[list["Product"]] = relationship(back_populates="category")
     discounts: Mapped[list["Discount"]] = relationship(back_populates="category")

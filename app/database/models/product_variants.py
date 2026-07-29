@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import func, String, Text, ForeignKey, DateTime, Numeric
+from sqlalchemy.ext.hybrid import hybrid_property
 from decimal import Decimal
 from datetime import datetime
 
@@ -20,7 +21,11 @@ class ProductVariant(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now(),
     )
 
+    @hybrid_property
+    def in_stock(self) -> bool:
+        return self.stock_quantity > 0
+
     product: Mapped["Product"] = relationship(back_populates="variants")
     cart_items: Mapped[list["CartItem"]] = relationship(back_populates="variant")
     discounts: Mapped[list["Discount"]] = relationship(back_populates="variant")
-    order_items: Mapped[list["OrderItem"]] = relationship("variant")
+    order_items: Mapped[list["OrderItem"]] = relationship(back_populates="variant")

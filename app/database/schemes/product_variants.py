@@ -11,10 +11,6 @@ class ProductVariantBase(BaseModel):
     price: Decimal
     stock_quantity: int
 
-    @hybrid_property
-    def in_stock(self) -> bool:
-        return self.stock_quantity > 0
-
 
 class ProductVariantCreate(ProductVariantBase):
     pass

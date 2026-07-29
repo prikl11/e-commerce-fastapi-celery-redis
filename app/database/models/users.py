@@ -19,6 +19,6 @@ class User(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
-    addresses: Mapped[list["Addresses"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+    addresses: Mapped[list["Address"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     carts: Mapped[list["Cart"]] = relationship(back_populates="user", cascade="all, delete-orphan")
     orders: Mapped[list["Order"]] = relationship(back_populates="user")

@@ -11,6 +11,7 @@ dependencies = [
     "greenlet>=3.5.4",
     "pydantic-settings>=2.14.2",
     "pydantic[email]>=2.13.4",
-    "slugify>=0.0.1",
+    "python-slugify>=8.0.4",
     "sqlalchemy>=2.0.51",
+    "uvicorn>=0.52.0",
 ]

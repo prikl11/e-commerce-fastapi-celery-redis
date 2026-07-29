@@ -19,5 +19,5 @@ class Address(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
     )
 
-    user: Mapped["User"] = relationship(back_populates="addressess")
-    orders: Mapped[list["Order"]] = relationship(back_populates="order")
+    user: Mapped["User"] = relationship(back_populates="addresses")
+    orders: Mapped[list["Order"]] = relationship(back_populates="shipping_address")

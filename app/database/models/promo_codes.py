@@ -23,4 +23,4 @@ class PromoCode(Base):
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now(),
     )
 
-    orders: Mapped[list["Orders"]] = relationship(back_populates="promo_code")
+    orders: Mapped[list["Order"]] = relationship(back_populates="promo_code")
