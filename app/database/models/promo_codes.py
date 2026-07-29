@@ -15,7 +15,7 @@ class PromoCode(Base):
     discount_type: Mapped[DiscountType] = mapped_column(Enum(DiscountType), server_default="percent")
     usage_limit: Mapped[int | None] = mapped_column()
     usage_count: Mapped[int] = mapped_column(server_default="0")
-    min_order_amount: Mapped[Decimal | Numeric] = mapped_column(Numeric(10, 2))
+    min_order_amount: Mapped[Decimal | None] = mapped_column(Numeric(10, 2))
     starts_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

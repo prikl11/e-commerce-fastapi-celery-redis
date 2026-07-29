@@ -89,6 +89,7 @@ dependencies = [
     { name = "greenlet" },
     { name = "pydantic", extra = ["email"] },
     { name = "pydantic-settings" },
+    { name = "slugify" },
     { name = "sqlalchemy" },
 ]
 
@@ -100,6 +101,7 @@ requires-dist = [
     { name = "greenlet", specifier = ">=3.5.4" },
     { name = "pydantic", extras = ["email"], specifier = ">=2.13.4" },
     { name = "pydantic-settings", specifier = ">=2.14.2" },
+    { name = "slugify", specifier = ">=0.0.1" },
     { name = "sqlalchemy", specifier = ">=2.0.51" },
 ]
 
@@ -369,6 +371,12 @@ sdist = { url = "https://files.pythonhosted.org/packages/82/ed/0301aeeac3e5353ef
 wheels = [
     { url = "https://files.pythonhosted.org/packages/0b/d7/1959b9648791274998a9c3526f6d0ec8fd2233e4d4acce81bbae76b44b2a/python_dotenv-1.2.2-py3-none-any.whl", hash = "sha256:1d8214789a24de455a8b8bd8ae6fe3c6b69a5e3d64aa8a8e5d68e694bbcb285a", size = 22101, upload-time = "2026-03-01T16:00:25.09Z" },
 ]
+
+[[package]]
+name = "slugify"
+version = "0.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/7b/89/fbb7391d777b60c82d4e1376bb181b98e75adf506b3f7ffe837eca64570b/slugify-0.0.1.tar.gz", hash = "sha256:c5703cc11c1a6947536f3ce8bb306766b8bb5a84a53717f5a703ce0f18235e4c", size = 1156, upload-time = "2010-12-07T16:36:05.53Z" }
 
 [[package]]
 name = "sqlalchemy"

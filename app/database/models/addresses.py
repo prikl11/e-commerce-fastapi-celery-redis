@@ -15,6 +15,9 @@ class Address(Base):
     postal_code: Mapped[str] = mapped_column(String(20))
     country: Mapped[str] = mapped_column(String(60))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
+    )
 
     user: Mapped["User"] = relationship(back_populates="addressess")
     orders: Mapped[list["Order"]] = relationship(back_populates="order")
