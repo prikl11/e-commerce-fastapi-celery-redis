@@ -43,10 +43,6 @@ class CategoryService:
         slug = await self._generate_unique_slug(data.name)
         category = Category(name=data.name, parent_id=data.parent_id, slug=slug)
         category = await self.repo.create(category=category)
-        
-        await self.repo.session.commit()
-        await self.repo.session.refresh(category)
-
         return category
 
     async def update_category(self, category_id: int, data: CategoryUpdate) -> Category:
@@ -57,13 +53,9 @@ class CategoryService:
             category.parent_id = data.parent_id
 
         await self.repo.update(category=category)
-        await self.repo.session.commit()
-        await self.repo.session.refresh(category)
-
         return category
 
     
     async def delete_category(self, category_id: int) -> None:
         category = await self.get_category(category_id=category_id)
         await self.repo.delete(category=category)
-        await self.repo.session.commit()

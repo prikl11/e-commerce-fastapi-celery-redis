@@ -3,6 +3,7 @@ from sqlalchemy import String, TEXT, func, ForeignKey, DateTime
 from datetime import datetime
 
 from app.database import Base
+from app.database.types import TSVector
 
 
 class Product(Base):
@@ -13,6 +14,7 @@ class Product(Base):
     description: Mapped[str | None] = mapped_column(TEXT)
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
     slug: Mapped[str] = mapped_column(String(160), unique=True, index=True)
+    search_vector: Mapped[str | None] = mapped_column(TSVector, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
 
