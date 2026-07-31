@@ -1,11 +1,9 @@
 from pydantic import BaseModel
 from datetime import datetime
 from decimal import Decimal
-from sqlalchemy.ext.hybrid import hybrid_property
 
 
 class ProductVariantBase(BaseModel):
-    product_id: int
     name: str
     description: str | None = None
     price: Decimal
@@ -38,7 +36,12 @@ class ProductVariantPublicResponse(BaseModel):
 
 class ProductVariantAdminResponse(ProductVariantBase):
     id: int
+    product_id: int
     created_at: datetime
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class StockAdjustment(BaseModel):
+    delta: int

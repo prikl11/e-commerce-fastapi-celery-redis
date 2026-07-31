@@ -25,7 +25,7 @@ class ProductRepository:
             limit: int = 20,
     ) -> list[Product]:
         stmt = (select(Product)
-                .options(selectinload(Product.category))
+                .options(selectinload(Product.category), selectinload(Product.variants))
                 .order_by(Product.id)
         )
 
@@ -39,13 +39,13 @@ class ProductRepository:
 
 
     async def get_by_id(self, product_id: int) -> Product:
-        stmt = select(Product).where(Product.id == product_id).options(selectinload(Product.category))
+        stmt = select(Product).where(Product.id == product_id).options(selectinload(Product.category), selectinload(Product.variants))
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
 
     async def get_by_slug(self, slug: str) -> Product:
-        stmt = select(Product).where(Product.slug == slug).options(selectinload(Product.category))
+        stmt = select(Product).where(Product.slug == slug).options(selectinload(Product.category), selectinload(Product.variants))
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
@@ -57,7 +57,7 @@ class ProductRepository:
         stmt = (
             select(Product)
             .where(Product.id == product.id)
-            .options(selectinload(Product.category))
+            .options(selectinload(Product.category), selectinload(Product.variants))
             .execution_options(populate_existing=True)
         )
         result = await self.session.execute(stmt)
@@ -77,7 +77,7 @@ class ProductRepository:
         stmt = (
             select(Product)
             .where(Product.id == product.id)
-            .options(selectinload(Product.category))
+            .options(selectinload(Product.category), selectinload(Product.variants))
             .execution_options(populate_existing=True)
         )
         result = await self.session.execute(stmt)

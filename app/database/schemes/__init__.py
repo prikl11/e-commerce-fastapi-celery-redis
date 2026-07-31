@@ -8,7 +8,7 @@ from .products import (
     ProductBase, ProductCreate, ProductResponse, ProductUpdate
 )
 from .product_variants import (
-    ProductVariantBase, ProductVariantAdminResponse, ProductVariantCreate, ProductVariantPublicResponse, ProductVariantUpdate
+    ProductVariantBase, ProductVariantAdminResponse, ProductVariantCreate, ProductVariantPublicResponse, ProductVariantUpdate, StockAdjustment
 )
 from .addresses import (
     AddressBase, AddressCreate, AddressResponse, AddressUpdate

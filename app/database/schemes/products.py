@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from datetime import datetime
 
 from app.database.schemes import CategoryShort
+from app.database.schemes.product_variants import ProductVariantPublicResponse
 
 
 class ProductBase(BaseModel):
@@ -26,6 +27,7 @@ class ProductResponse(BaseModel):
     description: str | None = None
     category: CategoryShort
     slug: str
+    variants: list[ProductVariantPublicResponse]
     created_at: datetime
     updated_at: datetime
 
