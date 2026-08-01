@@ -2,7 +2,7 @@ from .categories import (
     CategoryBase, CategoryResponse, CategoryCreate, CategoryShort, CategoryUpdate
 )
 from .users import (
-    UserBase, UserCreate, UserResponse, UserUpdate
+    UserBase, UserCreate, UserResponse, UserUpdate, RoleUpdate
 )
 from .products import (
     ProductBase, ProductCreate, ProductResponse, ProductUpdate
@@ -25,3 +25,4 @@ from .discounts import (
 from .promo_codes import (
     PromoCodeBase, PromoCodeCreate, PromoCodeResponse, PromoCodeUpdate
 )
+from .auth import TokenResponse, RefreshRequest

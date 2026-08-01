@@ -26,3 +26,9 @@ class PaymentStatus(str, enum.Enum):
     paid = "paid"
     failed = "failed"
     refunded = "refunded"
+
+
+class UserRole(str, enum.Enum):
+    customer = "customer"
+    manager = "manager"
+    admin = "admin"

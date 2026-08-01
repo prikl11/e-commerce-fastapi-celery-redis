@@ -1,16 +1,18 @@
 from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
+from app.database import UserRole
+
 
 class UserBase(BaseModel):
     first_name: str
     last_name: str
-    phone: str
+    phone: str | None = None
     email: EmailStr
 
 
 class UserCreate(UserBase):
-    hashed_password: str
+    password: str
 
 
 class UserUpdate(BaseModel):
@@ -18,7 +20,7 @@ class UserUpdate(BaseModel):
     last_name: str | None = None
     phone: str | None = None
     email: EmailStr | None = None
-    hashed_password: str | None = None
+    password: str | None = None
 
 
 class UserResponse(UserBase):
@@ -27,3 +29,7 @@ class UserResponse(UserBase):
     updated_at: datetime
 
     model_config = {"from_attributes": True}
+
+
+class RoleUpdate(BaseModel):
+    role: UserRole

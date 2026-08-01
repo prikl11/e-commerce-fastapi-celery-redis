@@ -1,3 +1,5 @@
 from .categories import router as categories_router
 from .products import router as products_router
 from .product_variants import router as variant_router
+from .auth import router as auth_router
+from .users import router as users_router

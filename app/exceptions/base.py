@@ -18,3 +18,13 @@ class ConflictError(AppError):
 class ValidationError(AppError):
     """Bussiness rule validation failed."""
     pass 
+
+
+class AuthenticationError(AppError):
+    """Authentication failed (invalid credentials, invalid/expired token)."""
+    pass
+
+
+class PermissionDeniedError(AppError):
+    """User is authenticated but lacks permission for this action."""
+    pass

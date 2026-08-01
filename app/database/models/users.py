@@ -1,8 +1,8 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, DateTime, func
+from sqlalchemy import String, DateTime, func, Enum
 from datetime import datetime
 
-from app.database import Base
+from app.database import Base, UserRole
 
 
 class User(Base):
@@ -14,6 +14,7 @@ class User(Base):
     phone: Mapped[str | None] = mapped_column(String(30), unique=True, nullable=True)
     email: Mapped[str] = mapped_column(String(80), unique=True)
     hashed_password: Mapped[str] = mapped_column(String(255))
+    role: Mapped[UserRole] = mapped_column(Enum(UserRole), server_default="customer")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), onupdate=func.now()
