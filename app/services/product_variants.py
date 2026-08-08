@@ -1,6 +1,6 @@
 from app.repositories import ProductVariantRepository
 from app.database import ProductVariant, ProductVariantCreate, ProductVariantUpdate
-from app.exceptions import ProductVarianNotFoundError, InsufficientStockError
+from app.exceptions import ProductVariantNotFoundError, InsufficientStockError
 
 
 class ProductVariantService:
@@ -12,7 +12,7 @@ class ProductVariantService:
     async def get_variant(self, variant_id: int) -> ProductVariant:
         variant = await self.repo.get_by_id(variant_id=variant_id)
         if variant is None:
-            raise ProductVarianNotFoundError(variant_id)
+            raise ProductVariantNotFoundError(variant_id)
         return variant
 
 
@@ -52,7 +52,7 @@ class ProductVariantService:
     ) -> ProductVariant:
         variant = await self.repo.get_by_id_for_update(variant_id=variant_id)
         if variant_id is None:
-            raise ProductVarianNotFoundError(variant_id)
+            raise ProductVariantNotFoundError(variant_id)
 
         new_quantity = variant.stock_quantity + delta
         if new_quantity < 0:

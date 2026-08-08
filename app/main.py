@@ -7,6 +7,7 @@ from app.routers import (
     variant_router,
     users_router,
     auth_router,
+    carts_router,
 )
 
 
@@ -20,6 +21,7 @@ app.include_router(router=users_router)
 app.include_router(router=categories_router)
 app.include_router(router=products_router)
 app.include_router(router=variant_router)
+app.include_router(router=carts_router)
 
 
 @app.get("/check")

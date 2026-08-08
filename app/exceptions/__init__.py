@@ -3,8 +3,10 @@ from .categories import CategoryNotFoundError, CategorySlugConflictError, Catego
 from .exception_handlers import register_exception_handlers
 from .products import ProductNotFoundError, ProductNotFoundSlugError, ProductSlugConflictError
 from .product_variants import (
-    ProductVarianNotFoundError, ProductVariantNotFoundSlugError, ProductVariantSlugConflictError, InsufficientStockError
+    ProductVariantNotFoundError, ProductVariantNotFoundSlugError, ProductVariantSlugConflictError, InsufficientStockError
 )
 from .users import (
     UserNotFound, EmailAlreadyExists, PhoneAlreadyExists, AuthenticationError, InvalidCredentials, InvalidTokenError, UserPermissionDenied
 )
+from .carts import CartNotFoundError
+from .cart_items import CartItemNotFoundError

@@ -15,3 +15,4 @@ def get_product_variant_service(repo: Annotated[ProductVariantRepository, Depend
 
 
 ProductVariantServiceDep = Annotated[ProductVariantService, Depends(get_product_variant_service)]
+ProductVariantRepositoryDep = Annotated[ProductVariantRepository, Depends(get_product_variant_repository)]

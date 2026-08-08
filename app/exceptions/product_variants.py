@@ -1,10 +1,10 @@
 from app.exceptions import NotFoundError, ConflictError, ValidationError
 
 
-class ProductVarianNotFoundError(NotFoundError):
-    def __init__(self, category_id: int):
-        self.category_id = category_id
-        super().__init__(f"Product with id={category_id} not found")
+class ProductVariantNotFoundError(NotFoundError):
+    def __init__(self, variant_id: int):
+        self.category_id = variant_id
+        super().__init__(f"Product with id={variant_id} not found")
 
 
 class ProductVariantNotFoundSlugError(NotFoundError):
