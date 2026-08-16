@@ -1,15 +1,16 @@
 from slugify import slugify
 from sqlalchemy import func, update
 
-from app.repositories import ProductRepository
+from app.repositories import ProductRepository, DiscountRepository
 from app.database import ProductCreate, Product, ProductUpdate
 from app.exceptions import ProductNotFoundSlugError, ProductNotFoundError
 
 
 class ProductService:
 
-    def __init__(self, repo: ProductRepository):
+    def __init__(self, repo: ProductRepository, discount_repo: DiscountRepository):
         self.repo = repo
+        self.discount_repo = discount_repo
 
 
     async def search_products(self, query: str) -> list[Product]:
