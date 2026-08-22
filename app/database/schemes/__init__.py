@@ -11,7 +11,7 @@ from .product_variants import (
     ProductVariantBase, ProductVariantAdminResponse, ProductVariantCreate, ProductVariantPublicResponse, ProductVariantUpdate, StockAdjustment
 )
 from .addresses import (
-    AddressBase, AddressCreate, AddressResponse, AddressUpdate
+    AddressBase, AddressCreate, AddressResponse, AddressUpdate, AddressCreateRequest
 )
 from .cart_items import (
     CartItemBase, CartItemResponse, CartItemUpdate, CartItemCreate

@@ -5,3 +5,4 @@ from .users import UserService
 from .carts import CartService
 from .promo_codes import PromoCodeService
 from .discounts import DiscountService
+from .addresses import AddressService

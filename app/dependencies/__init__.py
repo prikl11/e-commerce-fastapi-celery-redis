@@ -7,3 +7,4 @@ from .auth import CurrentUserDep, require_roles
 from .carts import CartServiceDep
 from .promo_codes import PromoCodeServiceDep
 from .discounts import DiscountServiceDep
+from .addresses import AddressServiceDep

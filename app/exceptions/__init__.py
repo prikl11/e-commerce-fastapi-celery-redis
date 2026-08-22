@@ -15,3 +15,4 @@ from .promo_codes import (
     PromoCodeMinOrderAmountError, PromoCodeUsageLimitExceededError, PromoCodeAlreadyExists
 )
 from .discounts import DiscountAlreadyExistsError, DiscountNotFoundError
+from .addresses import AddressNotFoundError

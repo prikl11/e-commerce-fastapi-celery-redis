@@ -5,3 +5,4 @@ from .auth import router as auth_router
 from .users import router as users_router
 from .carts import router as carts_router
 from .discounts import router as discounts_router
+from .addresses import router as addresses_router

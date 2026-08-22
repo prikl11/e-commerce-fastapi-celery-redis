@@ -9,6 +9,7 @@ from app.routers import (
     auth_router,
     carts_router,
     discounts_router,
+    addresses_router,
 )
 
 
@@ -19,6 +20,7 @@ register_exception_handlers(app)
 
 app.include_router(router=auth_router)
 app.include_router(router=users_router)
+app.include_router(router=addresses_router)
 app.include_router(router=categories_router)
 app.include_router(router=products_router)
 app.include_router(router=variant_router)

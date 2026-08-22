@@ -14,6 +14,13 @@ class AddressCreate(AddressBase):
     pass
 
 
+class AddressCreateRequest(BaseModel):
+    city: str
+    street: str
+    postal_code: str
+    country: str
+
+
 class AddressUpdate(BaseModel):
     city: str | None = None
     street: str | None = None
