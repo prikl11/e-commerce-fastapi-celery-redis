@@ -1,7 +1,7 @@
 from app.repositories import DiscountRepository
 from app.database import Discount, DiscountCreate, DiscountUpdate, ProductVariant
 from app.exceptions import DiscountNotFoundError, DiscountAlreadyExistsError
-from app.core import calculate_final_price
+from app.core.pricing import calculate_final_price
 
 
 class DiscountService:

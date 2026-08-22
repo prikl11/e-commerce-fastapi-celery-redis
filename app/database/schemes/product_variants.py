@@ -27,6 +27,7 @@ class ProductVariantPublicResponse(BaseModel):
     name: str
     description: str | None = None
     price: Decimal
+    final_price: Decimal
     in_stock: bool
     created_at: datetime
     updated_at: datetime

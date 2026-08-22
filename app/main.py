@@ -8,6 +8,7 @@ from app.routers import (
     users_router,
     auth_router,
     carts_router,
+    discounts_router,
 )
 
 
@@ -21,6 +22,7 @@ app.include_router(router=users_router)
 app.include_router(router=categories_router)
 app.include_router(router=products_router)
 app.include_router(router=variant_router)
+app.include_router(router=discounts_router)
 app.include_router(router=carts_router)
 
 
