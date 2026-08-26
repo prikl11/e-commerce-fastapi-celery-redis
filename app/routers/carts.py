@@ -13,7 +13,7 @@ async def get_all_carts(
     skip: int = 0,
     limit: int = 20,
 ):
-    return await service.get_all(skip=skip, limit=limit)
+    return await service.get_all_response(skip=skip, limit=limit)
 
 @router.get("/user/me", response_model=list[CartResponse])
 async def get_all_my_carts(
@@ -22,7 +22,7 @@ async def get_all_my_carts(
     skip: int = 0,
     limit: int = 20,
 ):
-    return await service.get_all_by_user(
+    return await service.get_all_response_by_user(
         user_id=current_user.id,
         skip=skip,
         limit=limit
@@ -36,7 +36,7 @@ async def get_all_carts_by_user(
     skip: int = 0,
     limit: int = 20,
 ):
-    return await service.get_all_by_user(
+    return await service.get_all_response_by_user(
         user_id=user_id,
         skip=skip,
         limit=limit,
@@ -50,7 +50,7 @@ async def get_all_carts_by_status(
     skip: int = 0,
     limit: int = 20,
 ):
-    return await service.get_all_by_status(
+    return await service.get_all_response_by_status(
         status=status,
         skip=skip,
         limit=limit
@@ -64,7 +64,7 @@ async def get_all_my_carts_by_status(
     skip: int = 0,
     limit: int = 20,
 ):
-    return await service.get_all_by_user_and_status(
+    return await service.get_all_response_by_user_and_status(
         user_id=current_user.id,
         status=status,
         skip=skip,
@@ -80,7 +80,7 @@ async def get_all_carts_by_user_and_status(
     skip: int = 0,
     limit: int = 20,
 ):
-    return await service.get_all_by_user_and_status(
+    return await service.get_all_response_by_user_and_status(
         user_id=user_id,
         status=status,
         skip=skip,
@@ -92,7 +92,7 @@ async def get_my_active_cart(
     service: CartServiceDep,
     current_user: CurrentUserDep,
 ):
-    return await service.get_my_cart(user_id=current_user.id)
+    return await service.get_my_cart_response(user_id=current_user.id)
 
 @router.get("/me/{cart_id}", response_model=CartResponse)
 async def get_my_cart_by_id(
@@ -100,7 +100,7 @@ async def get_my_cart_by_id(
     current_user: CurrentUserDep,
     cart_id: int,
 ):
-    return await service.get_my_cart_by_id(user_id=current_user.id, cart_id=cart_id)
+    return await service.get_my_cart_response_by_id(user_id=current_user.id, cart_id=cart_id)
 
 @router.get("/{cart_id}", response_model=CartResponse)
 async def get_cart_by_id(
@@ -108,7 +108,7 @@ async def get_cart_by_id(
     _: Annotated[User, Depends(require_roles(UserRole.admin, UserRole.manager))],
     cart_id: int,
 ):
-    return await service.get_by_id(cart_id=cart_id)
+    return await service.get_cart_response_by_id(cart_id=cart_id)
 
 @router.post("/items", response_model=CartResponse, status_code=201)
 async def add_item(

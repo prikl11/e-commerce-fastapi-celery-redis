@@ -1,6 +1,7 @@
-from app.repositories import CartRepository, ProductVariantRepository, CartItemRepository
-from app.database import Cart, CartStatus, CartItemCreate, CartItem, ProductVariant
+from app.repositories import CartRepository, ProductVariantRepository, CartItemRepository, DiscountRepository
+from app.database import Cart, CartStatus, CartItemCreate, CartItem, ProductVariant, CartItemResponse, ProductVariantPublicResponse, CartResponse
 from app.exceptions import CartNotFoundError, ProductVariantNotFoundError, InsufficientStockError, CartItemNotFoundError
+from app.core.discount_resolver import resolve_final_prices
 
 
 class CartService:
@@ -9,11 +10,55 @@ class CartService:
             self, 
             repo: CartRepository, 
             product_repo: ProductVariantRepository,
-            item_repo: CartItemRepository
+            item_repo: CartItemRepository,
+            discount_repo: DiscountRepository,
             ):
         self.repo = repo
         self.product_repo = product_repo
         self.item_repo = item_repo
+        self.discount_repo = discount_repo
+
+
+    async def _build_cart_item_responses(self, cart_items: list[CartItem]) -> list[CartItemResponse]:
+        if not cart_items:
+            return []
+
+        variants = [item.variant for item in cart_items]
+        final_prices = await resolve_final_prices(variants=variants, discount_repo=self.discount_repo)
+
+        result = []
+        for item in cart_items:
+            variant = item.variant
+            result.append(
+                CartItemResponse(
+                    cart_id=item.cart_id,
+                    quantity=item.quantity,
+                    variant=ProductVariantPublicResponse(
+                        id=variant.id,
+                        product_id=variant.product_id,
+                        name=variant.name,
+                        description=variant.description,
+                        price=variant.price,
+                        final_price=final_prices[variant.id],
+                        in_stock=variant.in_stock,
+                        created_at=variant.created_at,
+                        updated_at=variant.updated_at,
+                    ),
+                )
+            )
+        return result
+
+
+    async def _build_cart_response(self, cart: Cart) -> CartResponse:
+        cart_responses = await self._build_cart_item_responses(cart_items=cart.items)
+        return CartResponse(
+            id=cart.id,
+            user_id=cart.user_id,
+            status=cart.status,
+            items=cart_responses,
+            created_at=cart.created_at,
+            updated_at=cart.updated_at,
+        )
 
 
     async def get_all(
@@ -21,7 +66,17 @@ class CartService:
             skip: int = 0,
             limit: int = 20,
     ) -> list[Cart]:
-        return await self.repo.get_all(skip=skip, limit=limit)
+        carts = await self.repo.get_all(skip=skip, limit=limit)
+        return carts
+
+
+    async def get_all_response(
+            self,
+            skip: int = 0,
+            limit: int = 20,
+    ) -> list[CartResponse]:
+        carts = await self.repo.get_all(skip=skip, limit=limit)
+        return [await self._build_cart_response(c) for c in carts]
 
 
     async def get_all_by_user(
@@ -30,11 +85,26 @@ class CartService:
             skip: int = 0,
             limit: int = 20,
     ) -> list[Cart]:
-        return await self.repo.get_all_by_user(
+        carts = await self.repo.get_all_by_user(
             user_id=user_id,
             skip=skip,
             limit=limit
         )
+        return carts
+
+
+    async def get_all_response_by_user(
+            self,
+            user_id: int,
+            skip: int = 0,
+            limit: int = 20,
+    ) -> list[CartResponse]:
+        carts = await self.repo.get_all_by_user(
+            user_id=user_id,
+            skip=skip,
+            limit=limit
+        )
+        return [await self._build_cart_response(c) for c in carts]
 
 
     async def get_all_by_status(
@@ -43,11 +113,26 @@ class CartService:
             skip: int = 0,
             limit: int = 20,
     ) -> list[Cart]:
-        return await self.repo.get_all_by_status(
+        carts = await self.repo.get_all_by_status(
             status=status,
             skip=skip,
             limit=limit
         )
+        return carts
+
+
+    async def get_all_response_by_status(
+            self,
+            status: CartStatus = CartStatus.active,
+            skip: int = 0,
+            limit: int = 20,
+    ) -> list[CartResponse]:
+        carts = await self.repo.get_all_by_status(
+            status=status,
+            skip=skip,
+            limit=limit
+        )
+        return [await self._build_cart_response(c) for c in carts]
 
 
     async def get_all_by_user_and_status(
@@ -57,16 +142,38 @@ class CartService:
             skip: int = 0,
             limit: int = 20,
     ) -> list[Cart]:
-        return await self.repo.get_all_by_user_and_status(
+        carts = await self.repo.get_all_by_user_and_status(
             user_id=user_id,
             status=status,
             skip=skip,
             limit=limit
         )
+        return carts
+
+    async def get_all_response_by_user_and_status(
+            self,
+            user_id: int,
+            status: CartStatus = CartStatus.active,
+            skip: int = 0,
+            limit: int = 20,
+    ) -> list[CartResponse]:
+        carts = await self.repo.get_all_by_user_and_status(
+            user_id=user_id,
+            status=status,
+            skip=skip,
+            limit=limit
+        )
+        return [await self._build_cart_response(c) for c in carts]
 
 
     async def get_my_cart(self, user_id: int) -> Cart:
-        return await self.repo.get_or_create_active_cart(user_id=user_id)
+        cart = await self.repo.get_or_create_active_cart(user_id=user_id)
+        return cart
+
+
+    async def get_my_cart_response(self, user_id: int) -> CartResponse:
+        cart = await self.repo.get_or_create_active_cart(user_id=user_id)
+        return await self._build_cart_response(cart=cart)
 
 
     async def get_my_cart_by_id(self, user_id: int, cart_id: int) -> Cart:
@@ -76,11 +183,23 @@ class CartService:
         return cart
 
 
+    async def get_my_cart_response_by_id(
+            self, user_id: int, cart_id: int,
+    ) -> CartResponse:
+        cart = await self.get_my_cart_by_id(user_id=user_id, cart_id=cart_id)
+        return await self._build_cart_response(cart=cart)
+
+
     async def get_by_id(self, cart_id: int) -> Cart:
         cart = await self.repo.get_by_id(cart_id=cart_id)
         if cart is None:
             raise CartNotFoundError(cart_id=cart_id)
         return cart
+
+
+    async def get_cart_response_by_id(self, cart_id: int) -> CartResponse:
+        cart = await self.get_by_id(cart_id=cart_id)
+        return await self._build_cart_response(cart=cart)
 
 
     async def change_status(
@@ -125,7 +244,8 @@ class CartService:
         else:
             cart_item.quantity += data.quantity
             await self.item_repo.update(cart_item=cart_item)
-        return await self.get_my_cart(user_id=user_id)
+        cart = await self.get_my_cart(user_id=user_id)
+        return await self._build_cart_response(cart=cart)
 
 
     async def update_item_quantity(
@@ -142,7 +262,8 @@ class CartService:
         await self._check_stock(variant_id=variant_id, quantity=new_quantity)
         cart_item.quantity = new_quantity
         await self.item_repo.update(cart_item=cart_item)
-        return await self.get_my_cart(user_id=user_id)
+        cart = await self.get_my_cart(user_id=user_id)
+        return await self._build_cart_response(cart=cart)
 
 
     async def remove_item(
@@ -155,4 +276,5 @@ class CartService:
         if cart_item is None:
             raise CartItemNotFoundError()
         await self.item_repo.delete(cart_item=cart_item)
-        return await self.get_my_cart(user_id=user_id)
+        cart = await self.get_my_cart(user_id=user_id)
+        return await self._build_cart_response(cart=cart)

@@ -1,5 +1,6 @@
 from sqlalchemy import select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 from datetime import datetime, timezone
 
 from app.database import Discount
@@ -42,6 +43,7 @@ class DiscountRepository:
         now = datetime.now(timezone.utc)
         stmt = (
             select(Discount)
+            .options(selectinload(Discount.variant))
             .where(
                 Discount.category_id == category_id,
                 or_(Discount.starts_at.is_(None), Discount.starts_at <= now),
@@ -56,6 +58,7 @@ class DiscountRepository:
         now = datetime.now(timezone.utc)
         stmt = (
             select(Discount)
+            .options(selectinload(Discount.variant))
             .where(
                 Discount.variant_id.in_(variant_ids),
                 or_(Discount.starts_at.is_(None), Discount.starts_at <= now),
@@ -70,6 +73,7 @@ class DiscountRepository:
         now = datetime.now(timezone.utc)
         stmt = (
             select(Discount)
+            .options(selectinload(Discount.variant))
             .where(
                 Discount.category_id.in_(category_ids),
                 or_(Discount.starts_at.is_(None), Discount.starts_at <= now),

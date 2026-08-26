@@ -46,3 +46,13 @@ class ProductVariantAdminResponse(ProductVariantBase):
 
 class StockAdjustment(BaseModel):
     delta: int
+
+
+class ProductVariantOrderResponse(BaseModel):
+    id: int
+    product_id: int
+    name: str
+    description: str | None = None
+    price: Decimal
+
+    model_config = {"from_attributes": True}

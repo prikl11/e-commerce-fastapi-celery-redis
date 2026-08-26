@@ -18,6 +18,7 @@ class CartItemRepository:
             select(CartItem)
             .options(selectinload(CartItem.variant))
             .where(CartItem.cart_id == cart_id)
+            .execution_options(populate_existing=True)
         )
         result = await self.session.execute(stmt)
         return list(result.scalars().all())
@@ -32,6 +33,7 @@ class CartItemRepository:
             select(CartItem)
             .options(selectinload(CartItem.variant))
             .where(CartItem.cart_id == cart_id, CartItem.variant_id == variant_id)
+            .execution_options(populate_existing=True)
         )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
@@ -44,7 +46,11 @@ class CartItemRepository:
         stmt = (
             select(CartItem)
             .options(selectinload(CartItem.variant))
-            .where(CartItem.id == cart_item.id)
+            .where(
+                CartItem.cart_id == cart_item.cart_id,
+                CartItem.variant_id == cart_item.variant_id,
+            )
+            .execution_options(populate_existing=True)
         )
         result = await self.session.execute(stmt)
         return result.scalar_one()
@@ -54,8 +60,13 @@ class CartItemRepository:
         await self.session.flush()
 
         stmt = (
-            select(CartItem.id == cart_item.id)
+            select(CartItem)
+            .where(
+                CartItem.cart_id == cart_item.cart_id,
+                CartItem.variant_id == cart_item.variant_id,
+            )
             .options(selectinload(CartItem.variant))
+            .execution_options(populate_existing=True)
         )
         result = await self.session.execute(stmt)
         return result.scalar_one()

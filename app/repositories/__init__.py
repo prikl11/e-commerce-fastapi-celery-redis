@@ -7,3 +7,5 @@ from .carts import CartRepository
 from .promo_codes import PromoCodeRepository
 from .discounts import DiscountRepository
 from .addresses import AddressRepository
+from .orders import OrderRepository
+from .order_items import OrderItemRepository

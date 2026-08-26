@@ -11,6 +11,7 @@ from app.exceptions import (
     PromoCodeValidationError,
     PromoCodeAlreadyExists
 )
+from app.core.pricing import validate_promo_code_rules, calculate_promo_discount
 
 
 class PromoCodeService:
@@ -39,22 +40,12 @@ class PromoCodeService:
 
     async def validate_promo_code(self, code: str, cart_total: Decimal) -> PromoCode:
         promo_code = await self.get_by_code(code=code)
-        now = datetime.now(timezone.utc)
-        if promo_code.starts_at is not None and now < promo_code.starts_at:
-            raise PromoCodeExpiredError(code=code)
-        if promo_code.expires_at is not None and now > promo_code.expires_at:
-            raise PromoCodeExpiredError(code=code)
-        if promo_code.usage_limit is not None and promo_code.usage_count >= promo_code.usage_limit:
-            raise PromoCodeUsageLimitExceededError(code=code)
-        if promo_code.min_order_amount is not None and cart_total < promo_code.min_order_amount:
-            raise PromoCodeMinOrderAmountError()
+        validate_promo_code_rules(promo_code, cart_total)
         return promo_code
 
 
     def calculate_discount(self, promo_code: PromoCode, cart_total: Decimal) -> Decimal:
-        if promo_code.discount_type == "percent":
-            return cart_total * promo_code.discount / 100
-        return min(promo_code.discount, cart_total)
+        return calculate_promo_discount(promo_code=promo_code, cart_total=cart_total)
 
 
     async def increment_usage(self, code_id: int) -> PromoCode:

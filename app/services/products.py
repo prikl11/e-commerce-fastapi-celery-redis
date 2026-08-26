@@ -9,6 +9,7 @@ from app.database import (
     )
 from app.exceptions import ProductNotFoundSlugError, ProductNotFoundError
 from app.core.pricing import calculate_final_price
+from app.core.discount_resolver import resolve_final_prices
 
 
 class ProductService:
@@ -20,27 +21,14 @@ class ProductService:
 
     async def _build_variant_responses(
             self, variants: list[ProductVariant],
-    ) -> ProductVariantPublicResponse:
+    ) -> list[ProductVariantPublicResponse]:
         if not variants:
             return []
 
-        variant_ids = [v.id for v in variants]
-        category_ids = [v.product.category_id for v in variants]
-
-        variant_discounts = await self.discount_repo.get_active_for_variants_bulk(variant_ids=variant_ids)
-        category_discounts = await self.discount_repo.get_active_for_categories_bulk(category_ids=category_ids)
-
-        variant_discount_map = {d.variant_id: d for d in variant_discounts}
-        category_discount_map = {d.category_id: d for d in category_discounts}
+        final_prices = await resolve_final_prices(variants=variants, discount_repo=self.discount_repo)
 
         result = []
         for variant in variants:
-            discount = variant_discount_map.get(variant.id)
-            if discount is None:
-                discount = category_discount_map.get(variant.product.category_id)
-
-            final_price = calculate_final_price(price=variant.price, discount=discount)
-
             result.append(
                 ProductVariantPublicResponse(
                     id=variant.id,
@@ -48,13 +36,12 @@ class ProductService:
                     name=variant.name,
                     description=variant.description,
                     price=variant.price,
-                    final_price=final_price,
+                    final_price=final_prices[variant.id],
                     in_stock=variant.in_stock,
                     created_at=variant.created_at,
                     updated_at=variant.updated_at,
                 )
             )
-
         return result
 
 

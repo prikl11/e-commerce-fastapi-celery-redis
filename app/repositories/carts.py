@@ -2,7 +2,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.database import Cart, CartStatus, CartItem
+from app.database import Cart, CartStatus, CartItem, ProductVariant
 
 class CartRepository:
 
@@ -17,7 +17,11 @@ class CartRepository:
     ) -> list[Cart]:
         stmt = (
             select(Cart)
-            .options(selectinload(Cart.items), selectinload(CartItem.variant))
+            .options(
+                selectinload(Cart.items)
+                .selectinload(CartItem.variant)
+                .selectinload(ProductVariant.product)
+                )
             .offset(skip).limit(limit)
         )
         result = await self.session.execute(stmt)
@@ -32,7 +36,11 @@ class CartRepository:
     ) -> list[Cart]:
         stmt = (
             select(Cart)
-            .options(selectinload(Cart.items), selectinload(CartItem.variant))
+            .options(
+                selectinload(Cart.items)
+                .selectinload(CartItem.variant)
+                .selectinload(ProductVariant.product)
+                )
             .where(Cart.user_id == user_id)
             .offset(skip).limit(limit)
         )
@@ -48,7 +56,11 @@ class CartRepository:
     ) -> list[Cart]:
         stmt = (
             select(Cart)
-            .options(selectinload(Cart.items), selectinload(CartItem.variant))
+            .options(
+                selectinload(Cart.items)
+                .selectinload(CartItem.variant)
+                .selectinload(ProductVariant.product)
+                )
             .where(Cart.status == status)
             .offset(skip).limit(limit)
         )
@@ -65,7 +77,11 @@ class CartRepository:
     ) -> list[Cart]:
         stmt = (
             select(Cart)
-            .options(selectinload(Cart.items), selectinload(CartItem.variant))
+            .options(
+                selectinload(Cart.items)
+                .selectinload(CartItem.variant)
+                .selectinload(ProductVariant.product)
+                )
             .where(Cart.user_id == user_id, Cart.status == status)
             .offset(skip).limit(limit)
         )
@@ -76,7 +92,11 @@ class CartRepository:
     async def get_active_cart(self, user_id: int) -> Cart | None:
         stmt = (
             select(Cart)
-            .options(selectinload(Cart.items), selectinload(CartItem.variant))
+            .options(
+                selectinload(Cart.items)
+                .selectinload(CartItem.variant)
+                .selectinload(ProductVariant.product)
+                )
             .where(Cart.user_id == user_id, Cart.status == CartStatus.active)
         )
         result = await self.session.execute(stmt)
@@ -86,7 +106,11 @@ class CartRepository:
     async def get_by_id(self, cart_id: int) -> Cart | None:
         stmt = (
             select(Cart)
-            .options(selectinload(Cart.items), selectinload(CartItem.variant))
+            .options(
+                selectinload(Cart.items)
+                .selectinload(CartItem.variant)
+                .selectinload(ProductVariant.product)
+                )
             .where(Cart.id == cart_id)
         )
         result = await self.session.execute(stmt)
@@ -103,7 +127,11 @@ class CartRepository:
 
         stmt = (
             select(Cart)
-            .options(selectinload(Cart.items), selectinload(CartItem.variant))
+            .options(
+                selectinload(Cart.items)
+                .selectinload(CartItem.variant)
+                .selectinload(ProductVariant.product)
+                )
             .where(Cart.id == cart.id)
             .execution_options(populate_existing=True)
         )
@@ -116,7 +144,11 @@ class CartRepository:
         await self.session.flush()
         stmt = (
             select(Cart)
-            .options(selectinload(Cart.items), selectinload(CartItem.variant))
+            .options(
+                selectinload(Cart.items)
+                .selectinload(CartItem.variant)
+                .selectinload(ProductVariant.product)
+                )
             .where(Cart.id == cart.id)
             .execution_options(populate_existing=True)
         )
