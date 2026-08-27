@@ -36,3 +36,8 @@ class OrderResponse(BaseModel):
     delivered_at: datetime | None = None
 
     model_config = {"from_attributes": True}
+
+
+class OrderCreateResponse(BaseModel):
+    order: OrderResponse
+    payment_url: str

@@ -16,5 +16,6 @@ dependencies = [
     "python-multipart>=0.0.32",
     "python-slugify>=8.0.4",
     "sqlalchemy>=2.0.51",
+    "stripe>=15.5.1",
     "uvicorn>=0.52.0",
 ]

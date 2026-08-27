@@ -1,4 +1,4 @@
-from app.database import PaymentStatus
+from app.database.enums import PaymentStatus
 from app.exceptions import ValidationError
 
 

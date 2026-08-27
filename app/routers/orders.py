@@ -9,17 +9,21 @@ from app.database import (
     User, UserRole, OrderCreate,
     OrderResponse, OrderStatus,
     OrderCancel, OrderStatusUpdate,
+    OrderCreateResponse
 )
 
 router = APIRouter(prefix="/orders", tags=["orders"])
 
-@router.post("/", response_model=OrderResponse, status_code=201)
+@router.post("/", response_model=OrderCreateResponse, status_code=201)
 async def create_order_from_cart(
     service: OrderServiceDep,
     current_user: CurrentUserDep,
     data: OrderCreate,
 ):
-    return await service.create_order_from_cart(user_id=current_user.id, data=data)
+    order, payment_url = await service.create_order_from_cart(
+        user_id=current_user.id, data=data,
+    )
+    return OrderCreateResponse(order=order, payment_url=payment_url)
 
 @router.get("/me", response_model=list[OrderResponse])
 async def get_my_orders(

@@ -7,3 +7,4 @@ from .carts import router as carts_router
 from .discounts import router as discounts_router
 from .addresses import router as addresses_router
 from .orders import router as orders_router
+from .payments import router as payment_router

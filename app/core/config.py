@@ -18,6 +18,9 @@ class Settings(BaseSettings):
     smtp_host: str
     smtp_port: int
 
+    stripe_secret_key: str
+    stripe_webhook_secret: str
+
     model_config = SettingsConfigDict(env_file=".env")
 
 settings = Settings()

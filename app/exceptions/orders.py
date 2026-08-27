@@ -1,5 +1,5 @@
 from app.exceptions import ValidationError, NotFoundError
-from app.database import OrderStatus
+from app.database.enums import OrderStatus
 
 
 class InvalidOrderStatusTransitionError(ValidationError):

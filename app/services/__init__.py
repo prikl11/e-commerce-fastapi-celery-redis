@@ -7,3 +7,4 @@ from .promo_codes import PromoCodeService
 from .discounts import DiscountService
 from .addresses import AddressService
 from .orders import OrderService
+from .payments import PaymentService

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import Enum, Numeric, DateTime, Text, func, ForeignKey
+from sqlalchemy import Enum, Numeric, DateTime, Text, func, ForeignKey, String
 from datetime import datetime
 from decimal import Decimal
 
@@ -20,6 +20,7 @@ class Order(Base):
     promo_code_id: Mapped[int | None] = mapped_column(ForeignKey("promo_codes.id", ondelete="RESTRICT"))
     shipping_address_id: Mapped[int] = mapped_column(ForeignKey("addresses.id", ondelete="RESTRICT"))
     cancellation_reason: Mapped[str | None] = mapped_column(Text)
+    stripe_session_id: Mapped[str | None] = mapped_column(String(255))
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

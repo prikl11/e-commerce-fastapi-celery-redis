@@ -9,7 +9,7 @@ from app.database import (
     Order, OrderCreate,
     CartItem, ProductVariant, PromoCode,
     OrderStatus, PaymentStatus, OrderItem,
-    CartStatus, OrderCancel
+    CartStatus, OrderCancel, 
 )
 from app.exceptions import (
     ProductVariantNotFoundError, InsufficientStockError,
@@ -20,8 +20,9 @@ from app.core.pricing import (
     calculate_final_price, validate_promo_code_rules, calculate_promo_discount
 )
 from app.core.order_state_machine import (
-    validate_order_status_transition
+    validate_order_status_transition, validate_payment_status_transition
 )
+from app.services.payments import PaymentService
 
 
 class OrderService:
@@ -34,6 +35,7 @@ class OrderService:
             variant_repo: ProductVariantRepository,
             discount_repo: DiscountRepository,
             promo_code_repo: PromoCodeRepository,
+            payment_service: PaymentService,
     ):
         self.order_repo = order_repo
         self.order_item_repo = order_item_repo
@@ -41,6 +43,7 @@ class OrderService:
         self.variant_repo = variant_repo
         self.discount_repo = discount_repo
         self.promo_code_repo = promo_code_repo
+        self.payment_service = payment_service
 
 
     async def _lock_and_validate_stock(self, cart_items: list[CartItem]) -> dict[int, ProductVariant]:
@@ -82,7 +85,7 @@ class OrderService:
 
     async def create_order_from_cart(
             self, user_id: int, data: OrderCreate,
-    ) -> Order:
+    ) -> tuple[Order, str]:
         active_cart = await self.cart_repo.get_active_cart(user_id=user_id)
         if active_cart is None or not active_cart.items:
             raise EmptyCartError()
@@ -135,7 +138,14 @@ class OrderService:
 
         await self.cart_repo.change_status(cart=active_cart, status=CartStatus.converted)
 
-        return await self.order_repo.get_by_id(order_id=order.id)
+        final_order = await self.order_repo.get_by_id(order_id=order.id)
+        session_id, checkout_url = await self.payment_service.create_payment_session(
+            order_id=order.id, amount=total_amount,
+        )
+        final_order.stripe_session_id = session_id
+        final_order = await self.order_repo.update(data=final_order)
+
+        return final_order, checkout_url
 
 
     async def get_order(self, order_id: int) -> Order:
@@ -224,4 +234,18 @@ class OrderService:
         order.cancelled_at = datetime.now(timezone.utc)
         order.cancellation_reason = data.cancellation_reason
 
+        return await self.order_repo.update(data=order)
+
+
+    async def handle_payment_success(self, order_id: int) -> Order:
+        order = await self.get_order(order_id=order_id)
+        validate_payment_status_transition(
+            current=order.payment_status, new=PaymentStatus.paid,
+        )
+        validate_order_status_transition(
+            current=order.status, new=OrderStatus.processing,
+        )
+
+        order.payment_status = PaymentStatus.paid
+        order.status = OrderStatus.processing
         return await self.order_repo.update(data=order)

@@ -6,12 +6,13 @@ from app.dependencies.carts import get_cart_repository
 from app.dependencies.product_variants import get_product_variant_repository
 from app.dependencies.discounts import get_discount_repository
 from app.dependencies.promo_codes import get_promo_code_repository
+from app.dependencies.payments import get_payment_service
 from app.repositories import (
     OrderRepository, OrderItemRepository,
     PromoCodeRepository, ProductVariantRepository,
     DiscountRepository, CartRepository
 )
-from app.services import OrderService
+from app.services import OrderService, PaymentService
 
 
 def get_order_repository(db: SessionDep) -> OrderRepository:
@@ -26,6 +27,7 @@ CartRepoDep = Annotated[CartRepository, Depends(get_cart_repository)]
 ProductVariantRepoDep = Annotated[ProductVariantRepository, Depends(get_product_variant_repository)]
 DiscountRepoDep = Annotated[DiscountRepository, Depends(get_discount_repository)]
 PromoCodeRepoDep = Annotated[PromoCodeRepository, Depends(get_promo_code_repository)]
+PaymentServiceDep = Annotated[PaymentService, Depends(get_payment_service)]
 
 def get_order_service(
         order_repo: OrderRepoDep,
@@ -34,6 +36,7 @@ def get_order_service(
         variant_repo: ProductVariantRepoDep,
         discount_repo: DiscountRepoDep,
         promo_code_repo: PromoCodeRepoDep,
+        payment_service: PaymentServiceDep,
 ) -> OrderService:
     return OrderService(
         order_repo=order_repo,
@@ -41,7 +44,8 @@ def get_order_service(
         cart_repo=cart_repo,
         variant_repo=variant_repo,
         discount_repo=discount_repo,
-        promo_code_repo=promo_code_repo
+        promo_code_repo=promo_code_repo,
+        payment_service=payment_service,
     )
 
 OrderServiceDep = Annotated[OrderService, Depends(get_order_service)]
