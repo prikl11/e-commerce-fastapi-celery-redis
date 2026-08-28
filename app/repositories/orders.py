@@ -20,7 +20,9 @@ class OrderRepository:
     ) -> list[Order]:
         query = (
             select(Order)
-            .options(selectinload(Order.items).selectinload(OrderItem.variant))
+            .options(selectinload(Order.items).selectinload(OrderItem.variant),
+                    selectinload(Order.user)
+            )
         )
         if user_id is not None:
             query = query.where(Order.user_id == user_id)
@@ -34,9 +36,8 @@ class OrderRepository:
     async def get_by_id(self, order_id: int) -> Order | None:
         stmt = (
             select(Order)
-            .options(
-                selectinload(Order.items)
-                .selectinload(OrderItem.variant)
+            .options(selectinload(Order.items).selectinload(OrderItem.variant),
+                    selectinload(Order.user)
             )
             .where(Order.id == order_id)
         )
@@ -50,9 +51,8 @@ class OrderRepository:
 
         stmt = (
             select(Order)
-            .options(
-                selectinload(Order.items)
-                .selectinload(OrderItem.variant)
+            .options(selectinload(Order.items).selectinload(OrderItem.variant),
+                    selectinload(Order.user)
             )
             .where(Order.id == data.id)
             .execution_options(populate_existing=True)
@@ -66,9 +66,8 @@ class OrderRepository:
 
         stmt = (
             select(Order)
-            .options(
-                selectinload(Order.items)
-                .selectinload(OrderItem.variant),
+            .options(selectinload(Order.items).selectinload(OrderItem.variant),
+                    selectinload(Order.user)
             )
             .where(Order.id == data.id)
             .execution_options(populate_existing=True)

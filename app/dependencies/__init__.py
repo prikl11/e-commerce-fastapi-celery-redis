@@ -10,3 +10,4 @@ from .discounts import DiscountServiceDep
 from .addresses import AddressServiceDep
 from .orders import OrderServiceDep
 from .payments import PaymentServiceDep
+from .email import EmailServiceDep

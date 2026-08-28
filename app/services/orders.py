@@ -1,5 +1,6 @@
 from decimal import Decimal
 from datetime import datetime, timezone
+import logging
 
 from app.repositories import (
     OrderRepository, OrderItemRepository, CartRepository, 
@@ -23,6 +24,10 @@ from app.core.order_state_machine import (
     validate_order_status_transition, validate_payment_status_transition
 )
 from app.services.payments import PaymentService
+from app.services.email import EmailService
+
+
+logger = logging.getLogger(__name__)
 
 
 class OrderService:
@@ -36,6 +41,7 @@ class OrderService:
             discount_repo: DiscountRepository,
             promo_code_repo: PromoCodeRepository,
             payment_service: PaymentService,
+            email_service: EmailService,
     ):
         self.order_repo = order_repo
         self.order_item_repo = order_item_repo
@@ -44,6 +50,7 @@ class OrderService:
         self.discount_repo = discount_repo
         self.promo_code_repo = promo_code_repo
         self.payment_service = payment_service
+        self.email_service = email_service
 
 
     async def _lock_and_validate_stock(self, cart_items: list[CartItem]) -> dict[int, ProductVariant]:
@@ -252,4 +259,13 @@ class OrderService:
 
         order.payment_status = PaymentStatus.paid
         order.status = OrderStatus.processing
-        return await self.order_repo.update(data=order)
+        await self.order_repo.update(data=order)
+
+        user_email = order.user.email
+
+        try:
+            await self.email_service.send_order_confirmation(order=order, user_email=user_email)
+        except Exception:
+            logger.warning(f"Failed to send confirmation email for order {order.id}")
+
+        return order

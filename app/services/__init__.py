@@ -8,3 +8,4 @@ from .discounts import DiscountService
 from .addresses import AddressService
 from .orders import OrderService
 from .payments import PaymentService
+from .email import EmailService

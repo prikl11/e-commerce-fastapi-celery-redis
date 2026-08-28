@@ -16,8 +16,12 @@ class Settings(BaseSettings):
     celery_broker_url: str
     celery_result_backend: str
 
-    smtp_host: str
-    smtp_port: int
+    mail_server: str
+    mail_port: int
+    mail_from: str
+    mail_starttls: bool
+    mail_ssl_tls: bool
+    use_credentials: bool
 
     stripe_secret_key: str
     stripe_webhook_secret: str
