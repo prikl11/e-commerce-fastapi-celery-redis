@@ -86,6 +86,8 @@ class OrderService:
     async def create_order_from_cart(
             self, user_id: int, data: OrderCreate,
     ) -> tuple[Order, str]:
+        from app.tasks.orders import cancel_unpaid_order
+
         active_cart = await self.cart_repo.get_active_cart(user_id=user_id)
         if active_cart is None or not active_cart.items:
             raise EmptyCartError()
@@ -144,6 +146,8 @@ class OrderService:
         )
         final_order.stripe_session_id = session_id
         final_order = await self.order_repo.update(data=final_order)
+
+        cancel_unpaid_order.apply_async(args=[final_order.id], countdown=900)
 
         return final_order, checkout_url
 

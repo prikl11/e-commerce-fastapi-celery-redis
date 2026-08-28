@@ -13,7 +13,8 @@ class Settings(BaseSettings):
     postgres_password: str
     postgres_db: str
 
-    redis_url: str
+    celery_broker_url: str
+    celery_result_backend: str
 
     smtp_host: str
     smtp_port: int
