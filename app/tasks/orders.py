@@ -5,7 +5,7 @@ from app.core.celery_app import celery_app
 from app.database.db import AsyncSessionLocal
 from app.database.enums import OrderStatus, PaymentStatus
 from app.services import (
-    OrderService, PaymentService
+    OrderService, PaymentService, EmailService
 )
 from app.repositories import (
     OrderRepository, OrderItemRepository,
@@ -31,6 +31,7 @@ async def _cancel_unpaid_order_async(order_id: int) -> None:
         discount_repo = DiscountRepository(session)
         promo_code_repo = PromoCodeRepository(session)
         payment_service = PaymentService()
+        email_service = EmailService()
 
         order_service = OrderService(
             order_repo=order_repo,
@@ -40,6 +41,7 @@ async def _cancel_unpaid_order_async(order_id: int) -> None:
             discount_repo=discount_repo,
             promo_code_repo=promo_code_repo,
             payment_service=payment_service,
+            email_service=email_service,
         )
 
         order = await order_service.get_order(order_id=order_id)
