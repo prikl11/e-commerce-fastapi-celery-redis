@@ -18,3 +18,31 @@ services:
     ports:
       - "1025:1025"
       - "8025:8025"
+
+  backend:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    command: sh -c "uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  celery_worker:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - db
+    command: uv run celery -A app.core.celery_app.celery_app worker --loglevel=info
+
+  stripe-cli:
+    image: stripe/stripe-cli
+    command: listen --api-key ${STRIPE_SECRET_KEY} --forward-to backend:8000/webhooks/stripe
+    env_file:
+      - .env
+    depends_on:
+      - backend
