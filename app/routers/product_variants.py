@@ -1,15 +1,20 @@
-from fastapi import APIRouter
+from typing import Annotated
+from fastapi import APIRouter, Depends
 
-from app.dependencies import ProductVariantServiceDep
+from app.dependencies import ProductVariantServiceDep, require_roles
 from app.database import (
-    ProductVariantAdminResponse, ProductVariantCreate, ProductVariantUpdate, StockAdjustment,
+    ProductVariantAdminResponse, ProductVariantCreate, ProductVariantUpdate, StockAdjustment, UserRole, User
 )
 
 router = APIRouter(prefix="/products/{product_id}/variants", tags=["product_variants"])
 
 
 @router.get("/", response_model=list[ProductVariantAdminResponse])
-async def get_variants(product_id: int, service: ProductVariantServiceDep):
+async def get_variants(
+    product_id: int, 
+    service: ProductVariantServiceDep,
+    _: Annotated[User, Depends(require_roles(UserRole.admin, UserRole.manager))],
+):
     return await service.get_variant_by_product(product_id=product_id)
 
 @router.get("/{variant_id}", response_model=ProductVariantAdminResponse)
@@ -17,6 +22,7 @@ async def get_variant(
     product_id: int,
     variant_id: int,
     service: ProductVariantServiceDep,
+    _: Annotated[User, Depends(require_roles(UserRole.admin, UserRole.manager))],
 ):
     return await service.get_variant(variant_id=variant_id)
 
@@ -25,6 +31,7 @@ async def create_variant(
     product_id: int,
     data: ProductVariantCreate,
     service: ProductVariantServiceDep,
+    _: Annotated[User, Depends(require_roles(UserRole.admin, UserRole.manager))],
 ):
     return await service.create_variant(product_id=product_id, data=data)
 
@@ -34,6 +41,7 @@ async def update_variant(
     variant_id: int,
     data: ProductVariantUpdate,
     service: ProductVariantServiceDep,
+    _: Annotated[User, Depends(require_roles(UserRole.admin, UserRole.manager))],
 ):
     return await service.update_variant(variant_id=variant_id, data=data)
 
@@ -42,6 +50,7 @@ async def delete_variant(
     product_id: int,
     variant_id: int,
     service: ProductVariantServiceDep,
+    _: Annotated[User, Depends(require_roles(UserRole.admin, UserRole.manager))],
 ):
     await service.delete_variant(variant_id=variant_id)
 
@@ -51,5 +60,6 @@ async def adjust_stock(
     variant_id: int,
     data: StockAdjustment,
     service: ProductVariantServiceDep,
+    _: Annotated[User, Depends(require_roles(UserRole.admin, UserRole.manager))],
 ):
     return await service.adjust_stock(variant_id=variant_id, delta=data.delta)

@@ -8,18 +8,16 @@ from app.exceptions import (
 
 
 def calculate_final_price(price: Decimal, discount: Discount | None) -> Decimal:
-        if discount is None:
-            return price.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
-        if discount.discount_type == "percent":
-            final_price = price * (
-                 Decimal("1") - discount.discount / Decimal("100")
-            )
-        else:
-            final_price = price - discount.discount
-        return final_price.quantize(
-            Decimal("0.01"),
-            rounding=ROUND_HALF_UP,
-        )
+    if discount is None:
+        return price.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    if discount.discount_type == "percent":
+        final_price = price * (Decimal("1") - discount.discount / Decimal("100"))
+    else:
+        final_price = price - discount.discount
+
+    final_price = max(final_price, Decimal("0"))
+    return final_price.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
 
 def validate_promo_code_rules(promo_code: PromoCode, cart_total: Decimal) -> None:
@@ -36,5 +34,7 @@ def validate_promo_code_rules(promo_code: PromoCode, cart_total: Decimal) -> Non
 
 def calculate_promo_discount(promo_code: PromoCode, cart_total: Decimal) -> Decimal:
     if promo_code.discount_type == "percent":
-        return cart_total * promo_code.discount / 100
-    return min(promo_code.discount, cart_total)
+        discount_amount = cart_total * promo_code.discount / Decimal("100")
+    else:
+        discount_amount = min(promo_code.discount, cart_total)
+    return discount_amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
